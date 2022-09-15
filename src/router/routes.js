@@ -48,6 +48,14 @@ const entityCrudRouteConfigs = [
 
   },
   {
+    path: 'QuestionTarget',
+    baseRouteName: 'Admin.QuestionTarget',
+    componentPath: 'pages/Admin/QuestionTarget.vue',
+    breadcrumbs: { title: 'اهداف سوال' },
+    permissions: ['optionIndex', 'optionStore', 'optionShow', 'optionUpdate']
+
+  },
+  {
     path: 'majors',
     baseRouteName: 'Admin.Majors',
     componentPath: 'pages/Admin/Majors',
@@ -89,12 +97,17 @@ const routes = [
     },
     children: [
       {
+        path: '',
+        name: 'HomePage',
+        component: () => import('pages/User/landing/landing')
+      },
+      {
         path: 'landing',
         name: 'landing',
         component: () => import('layouts/LandingLayout'),
         children: [
           {
-            path: '3a_exams',
+            path: '',
             name: 'Landing.3aExams',
             component: () => import('pages/User/landing/landing')
           }
@@ -110,9 +123,6 @@ const routes = [
           layoutHeaderType: 'panel',
           layoutLeftDrawerVisible: true,
           layoutLeftSideBarType: 'panel'
-        },
-        meta: {
-          middlewares: [auth]
         }
       },
       {
@@ -121,27 +131,55 @@ const routes = [
         component: () => import('pages/Auth/Login.vue')
       },
       {
+        path: 'subscription',
+        name: 'subscription',
+        component: () => import('pages/User/Subscription'),
+        breadcrumbs: { title: 'ساخت آزمون' },
+        layoutConfig: {
+          layoutHeaderVisible: true,
+          layoutHeaderType: 'default',
+          layoutLeftDrawerVisible: false,
+          layoutLeftSideBarType: 'default'
+        }
+      },
+      {
         path: 'user',
         name: 'User',
         component: () => import('layouts/UserPanelLayouts/UserPanelLayout'),
         layoutConfig: {
-          name: 'User.MyOrders',
           layoutHeaderVisible: true,
           layoutHeaderType: 'default',
           layoutLeftDrawerVisible: false,
+          layoutLeftDrawer: false,
           layoutLeftSideBarType: 'default',
-          layoutLeftDrawerOverlay: true
+          layoutLeftDrawerOverlay: false
         },
         meta: {
           middlewares: [auth]
         },
         children: [
           {
+
+            path: 'profile',
+            name: 'profile',
+            component: () => import('pages/User/profile/profile'),
+            layoutConfig: {
+              layoutLeftDrawerVisible: true
+            }
+          },
+          {
             path: 'dashboard',
             name: 'User.Dashboard',
             component: () => import('pages/User/Dashboard/Dashboard'),
+            layoutConfig: {
+              layoutHeaderVisible: true,
+              layoutHeaderType: 'default',
+              layoutLeftDrawerVisible: true,
+              layoutLeftSideBarType: 'default'
+            },
             meta: {
               middlewares: [auth]
+
             }
           },
           {
@@ -159,6 +197,12 @@ const routes = [
             path: 'user_exam_list',
             name: 'User.Exam.List',
             component: () => import('pages/User/exam/List'),
+            layoutConfig: {
+              layoutHeaderVisible: true,
+              layoutHeaderType: 'default',
+              layoutLeftDrawerVisible: true,
+              layoutLeftSideBarType: 'default'
+            },
             middleware: [
               Permissions.hasPermission('examStore')
             ]
@@ -516,9 +560,26 @@ const routes = [
         path: '/cart',
         name: 'cart',
         component: () => import('pages/Cart/Cart'),
-        meta: {
-          middlewares: [
-            Permissions.hasPermission('examStore')]
+        // meta: {
+        //   middlewares: [
+        //     Permissions.hasPermission('examStore')]
+        // },
+        layoutConfig: {
+          layoutHeaderVisible: false,
+          layoutLeftDrawerVisible: false
+        }
+      },
+      {
+        path: '/order/:orderId/thankYou',
+        name: 'thankYouPage',
+        component: () => import('pages/ThankYouPage/ThankYouPage'),
+        // meta: {
+        //   middlewares: [
+        //     Permissions.hasPermission('examStore')]
+        // },
+        layoutConfig: {
+          layoutHeaderVisible: false,
+          layoutLeftDrawerVisible: false
         }
       }
 
