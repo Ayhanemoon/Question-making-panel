@@ -34,37 +34,58 @@
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">شنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[0].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[0].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">یکشنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[1].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[1].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">دوشنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[2].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[2].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">سه‌شنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[3].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[3].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">چهارشنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[4].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[4].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">پنجشنبه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week' && chartWeek[5].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[5].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
             <div class="col-1 calendar-col"
                  :class="{'weekly': tab === 'week'}">
               <span class="day-name">جمعه</span>
-              <span class="day-date"></span>
+              <span v-if="tab === 'week'  && chartWeek[6].persianDate !== undefined"
+                    class="day-date">
+                {{chartWeek[6].persianDate.toString().substring(5,10)}}
+              </span>
             </div>
           </div>
           <q-tab-panels v-model="tab"
@@ -87,7 +108,12 @@
                             :key="event"
                             name="circle"
                             class="q-mx-xs"
-                            color="primary" />
+                            color="primary">
+                      <q-tooltip anchor="top middle"
+                                 self="center middle">
+                        {{ event.title }}
+                      </q-tooltip>
+                    </q-icon>
                   </div>
                 </div>
               </div>
@@ -105,6 +131,19 @@
                            class="hour">
                         {{ `${hour+8}:00` }}
                       </div>
+                    </div>
+                    <div v-for="event in chartWeek[day - 1].events"
+                         :key="event.id"
+                         class="weekly-event"
+                         :style = "{ top: (parseInt(event.start_at.substring(11,13)) - baseHour) * baseHight + 'px', height: (parseInt(event.finish_at.substring(11,13)) - parseInt(event.start_at.substring(11,13))) * baseHight + 'px' }"
+                    >
+                      <q-tooltip class="flex column flex-center"
+                                 anchor="top middle"
+                                 self="center middle">
+                        <span>{{ event.title }}</span>
+                        <span>شروع آزمون {{ event.start_at.substring(11,16) }}</span>
+                        <span>پایان آزمون {{ event.finish_at.substring(11,16) }}</span>
+                      </q-tooltip>
                     </div>
                   </div>
                 </div>
@@ -402,6 +441,9 @@ export default defineComponent({
         }
       ]
     ])
+    const baseHight = ref(50)
+    const baseHour = ref(9)
+    const chartWeek = ref([])
     const dayList = ref(['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'آدینه'])
     const tab = ref('month')
     const calendarYear = ref(null)
@@ -440,16 +482,32 @@ export default defineComponent({
           } else {
             month.value[w][col].num = dayCounter
             month.value[w][col].date = calendarDate.value.startOf('jMonth').add(dayCounter - 1, 'd').format('YYYY/MM/DD')
+            const persianDate = new Intl.DateTimeFormat('fa-IR').format(calendarDate.value.startOf('jMonth').add(dayCounter - 1, 'd'))
+            month.value[w][col].persianDate = persianDate
             dayCounter++
           }
         }
       }
 
       // import data to weekly view object
+      for (let w = 0; w < 6; w++) {
+        for (let col = 0; col < 7; col++) {
+          if (month.value[w][col].date === calendarDate.value.format('YYYY/MM/DD')) {
+            chartWeek.value = month.value[w]
+          }
+        }
+      }
+    }
+
+    const setAttr = (event) => {
+      console.log(document.getSelection(), event)
     }
 
     return {
+      baseHight,
+      baseHour,
       month,
+      chartWeek,
       calendarMonth,
       calendarYear,
       startOfMonth,
@@ -457,11 +515,9 @@ export default defineComponent({
       dayNum,
       startFrom,
       startTill,
-      loadCalendar
+      loadCalendar,
+      setAttr
     }
-  },
-  data() {
-
   },
   methods: {
     getEvents() {
@@ -628,17 +684,13 @@ export default defineComponent({
             is_open: false
           }
         ]
-        let dayCounter = 1
         for (let w = 0; w < 6; w++) {
           for (let col = 0; col < 7; col++) {
-            console.log(dayCounter)
             for (let e = 0; e < test.length; e++) {
-              // console.log(test[e].start_at.substring(0, 10))
               if (test[e].start_at.substring(0, 10) === this.month[w][col].date.toString().split('/').join('-')) {
                 this.month[w][col].events.push(test[e])
               }
             }
-            dayCounter++
           }
         }
       })
@@ -789,6 +841,7 @@ export default defineComponent({
 
             &.weekly {
               min-width: 80px;
+              justify-content: flex-start;
             }
           }
 
@@ -857,6 +910,7 @@ export default defineComponent({
             padding: 20px 0 0 60px;
 
             .day-col {
+              position: relative;
 
               .hour-line {
                 width: 80px;
@@ -880,12 +934,14 @@ export default defineComponent({
                   color: #6D708B;
 
                 }
+              }
 
-                .event {
-                  background: #434765;
-                  width: 40px;
-                  background: #9690E4;
-                }
+              .weekly-event {
+                position: absolute;
+                left: 25%;
+                width: 40px;
+                background: #9690E4;
+                border-radius: 8px;
               }
             }
           }
