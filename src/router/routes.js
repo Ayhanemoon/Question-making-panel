@@ -100,6 +100,8 @@ const routes = [
       layoutRightDrawer: false,
       layoutFooter: false,
       layoutHeaderCustomClass: '',
+      layoutBreadcrumbsElements: [],
+      layoutBreadcrumbs: false,
       layoutLeftDrawerCustomClass: 'main-layout-left-drawer',
       layoutPageContainerCustomClass: 'main-layout-container'
     },
@@ -247,6 +249,26 @@ const routes = [
               {
                 path: '',
                 name: 'User.Create.Exam',
+                layoutConfig: {
+                  layoutBreadcrumbs: {
+                    separator: 'isax:arrow-right-3'
+                  },
+                  layoutBreadcrumbsElements: [
+                    {
+                      title: 'صفحه اصلی',
+                      route: {
+                        name: 'HomePage'
+                      }
+                    },
+                    {
+                      title: 'آزمون ها',
+                      route: {
+                        name: 'User.Exam.List'
+                      }
+                    },
+                    { title: 'ساخت آزمون' }
+                  ]
+                },
                 component: () => import('pages/User/exam/Create/Create')
               }
             ]
@@ -610,7 +632,21 @@ const routes = [
       },
       {
         path: '/onlineQuiz/konkoorView/:quizId',
-        name: 'konkoorView',
+        name: 'onlineQuiz.konkoorView',
+        component: () => import('pages/User/exam/participate/konkoorView'),
+        layoutConfig: {
+          layoutHeaderVisible: true,
+          layoutHeaderType: 'quiz',
+          layoutLeftDrawerVisible: true,
+          layoutLeftSideBarType: 'quiz'
+        },
+        meta: {
+          middlewares: [auth]
+        }
+      },
+      {
+        path: '/onlineQuiz/konkoorView/personal/:quizId',
+        name: 'onlineQuiz.konkoorView.personal',
         component: () => import('pages/User/exam/participate/konkoorView'),
         layoutConfig: {
           layoutHeaderVisible: true,
