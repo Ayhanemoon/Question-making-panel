@@ -1,14 +1,15 @@
 <template>
   <div class="user-panel-no-navigation-container">
     <breadcrumbs />
-    <Router :include="keepAliveComponents" />
+    <router :include="keepAliveComponents" />
   </div>
 </template>
 
 <script>
-import Router from 'src/router/Router'
-import KeepAliveComponents from 'assets/js/KeepAliveComponents'
-import { Breadcrumbs } from 'quasar-template-builder'
+import Router from 'src/router/Router.vue'
+import KeepAliveComponents from 'src/assets/js/KeepAliveComponents.js'
+import Breadcrumbs from 'quasar-template-builder/src/components/breadcrumbs.vue'
+
 export default {
   name: 'userPanelNoNavigationLayout',
   components: {
